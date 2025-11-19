@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Case File Merger</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            color: #888;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 25px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .section-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        input[type="file"],
+        select,
+        input[type="text"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input[type="file"]:focus,
+        select:focus,
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            padding: 12px;
+            border-radius: 4px;
+            color: #1565c0;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        
+        .error-box {
+            background: #ffebee;
+            border-left: 4px solid #f44336;
+            padding: 12px;
+            border-radius: 4px;
+            color: #c62828;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+        
+        .success-box {
+            background: #e8f5e9;
+            border-left: 4px solid #4caf50;
+            padding: 12px;
+            border-radius: 4px;
+            color: #2e7d32;
+            font-size: 13px;
+            margin-bottom: 15px;
+        }
+        
+        .column-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .button-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        
+        button {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            flex: 1;
+            min-width: 150px;
+        }
+        
+        .btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .btn-secondary:hover {
+            background: #e0e0e0;
+        }
+        
+        .btn-danger {
+            background: #ff6b6b;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #ff5252;
+        }
+        
+        .btn-success {
+            background: #51cf66;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #40c057;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        .table-wrapper {
+            overflow-x: auto;
+            margin: 20px 0;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 12px;
+        }
+        
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        tr:hover {
+            background: #f5f5f5;
+        }
+        
+        td {
+            max-width: 300px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .merged-column {
+            background: #fffbea;
+            font-weight: 500;
+        }
+        
+        .feedback {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .feedback.show {
+            display: block;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .column-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Test Case File Merger</h1>
+        <div class="subtitle">Upload XLSX file, select columns to merge, and download with new column</div>
+        
+        <!-- Step 1: File Upload -->
+        <div class="section">
+            <div class="section-title">Step 1: Upload File</div>
+            <div id="feedback" class="feedback"></div>
+            <div class="form-group">
+                <label for="fileInput">Select XLSX File</label>
+                <input type="file" id="fileInput" accept=".xlsx,.xls" />
+                <div class="info-box">Upload your test case Excel file (.xlsx or .xls)</div>
+            </div>
+        </div>
+        
+        <!-- Step 2: Configuration -->
+        <div class="section hidden" id="configSection">
+            <div class="section-title">Step 2: Configure Merge</div>
+            
+            <div class="form-group">
+                <label for="sheetSelect">Select Sheet</label>
+                <select id="sheetSelect">
+                    <option>Loading sheets...</option>
+                </select>
+            </div>
+            
+            <div class="column-grid">
+                <div>
+                    <label for="column1">First Column to Merge</label>
+                    <select id="column1">
+                        <option value="">Select column...</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="column2">Second Column to Merge</label>
+                    <select id="column2">
+                        <option value="">Select column...</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="separator">Separator (between columns)</label>
+                <input type="text" id="separator" value="---" placeholder="Enter separator">
+                <div class="info-box">This will separate your two columns in the merged result</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="newColName">New Column Name</label>
+                <input type="text" id="newColName" value="Merged" placeholder="Enter new column name">
+            </div>
+            
+            <div class="button-group">
+                <button class="btn-primary" id="previewBtn" onclick="previewMerge()" disabled>Preview Merge</button>
+                <button class="btn-secondary" onclick="resetAll()">Reset</button>
+            </div>
+        </div>
+        
+        <!-- Step 3: Preview & Download -->
+        <div class="section hidden" id="previewSection">
+            <div class="section-title">Step 3: Review & Download</div>
+            <div class="table-wrapper" id="tableWrapper">
+                <table id="previewTable">
+                    <thead>
+                        <tr id="previewHeader"></tr>
+                    </thead>
+                    <tbody id="previewBody"></tbody>
+                </table>
+            </div>
+            
+            <div class="info-box">The highlighted column is your new merged column. Original columns are preserved.</div>
+            
+            <div class="button-group">
+                <button class="btn-success" onclick="downloadExcel()">⬇️ Download File</button>
+                <button class="btn-secondary" onclick="goBack()">← Back to Config</button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let workbook = null;
+        let allData = [];
+        let mergedData = [];
+        
+        document.getElementById('fileInput').addEventListener('change', handleFileUpload);
+        document.getElementById('sheetSelect').addEventListener('change', updateColumnOptions);
+        document.getElementById('column1').addEventListener('change', updatePreviewButton);
+        document.getElementById('column2').addEventListener('change', updatePreviewButton);
+        
+        function handleFileUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    workbook = XLSX.read(event.target.result, { type: 'array' });
+                    populateSheetSelect();
+                    document.getElementById('configSection').classList.remove('hidden');
+                    showFeedback('File loaded successfully!', 'success-box');
+                } catch (error) {
+                    showFeedback('Error reading file: ' + error.message, 'error-box');
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+        
+        function populateSheetSelect() {
+            const sheetSelect = document.getElementById('sheetSelect');
+            sheetSelect.innerHTML = '';
+            workbook.SheetNames.forEach(name => {
+                const option = document.createElement('option');
+                option.value = name;
+                option.textContent = name;
+                sheetSelect.appendChild(option);
+            });
+            updateColumnOptions();
+        }
+        
+        function updateColumnOptions() {
+            const sheetName = document.getElementById('sheetSelect').value;
+            const sheet = workbook.Sheets[sheetName];
+            const data = XLSX.utils.sheet_to_json(sheet);
+            
+            allData = data;
+            
+            if (!data || data.length === 0) {
+                showFeedback('No data found in this sheet', 'error-box');
+                return;
+            }
+            
+            const columns = Object.keys(data[0]);
+            
+            [document.getElementById('column1'), document.getElementById('column2')].forEach(select => {
+                const currentValue = select.value;
+                select.innerHTML = '<option value="">Select column...</option>';
+                columns.forEach(col => {
+                    const option = document.createElement('option');
+                    option.value = col;
+                    option.textContent = col;
+                    select.appendChild(option);
+                });
+                if (currentValue && columns.includes(currentValue)) {
+                    select.value = currentValue;
+                }
+            });
+            
+            updatePreviewButton();
+        }
+        
+        function updatePreviewButton() {
+            const col1 = document.getElementById('column1').value;
+            const col2 = document.getElementById('column2').value;
+            document.getElementById('previewBtn').disabled = !col1 || !col2 || col1 === col2;
+        }
+        
+        function previewMerge() {
+            const col1 = document.getElementById('column1').value;
+            const col2 = document.getElementById('column2').value;
+            const separator = document.getElementById('separator').value;
+            const newColName = document.getElementById('newColName').value || 'Merged';
+            
+            if (!col1 || !col2 || col1 === col2) {
+                showFeedback('Please select two different columns', 'error-box');
+                return;
+            }
+            
+            // Create merged data with new column added
+            mergedData = allData.map(row => {
+                const merged = {};
+                Object.keys(row).forEach(key => {
+                    merged[key] = row[key];
+                });
+                merged[newColName] = `${row[col1]}\n\n${separator}\n\n${row[col2]}`;
+                return merged;
+            });
+            
+            // Display preview
+            displayPreview(newColName);
+            document.getElementById('previewSection').classList.remove('hidden');
+            document.getElementById('configSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function displayPreview(mergedColName) {
+            const previewHeader = document.getElementById('previewHeader');
+            const previewBody = document.getElementById('previewBody');
+            
+            if (mergedData.length === 0) return;
+            
+            const columns = Object.keys(mergedData[0]);
+            
+            // Clear and populate header
+            previewHeader.innerHTML = '';
+            columns.forEach(col => {
+                const th = document.createElement('th');
+                th.textContent = col;
+                if (col === mergedColName) {
+                    th.style.background = '#ffc107';
+                }
+                previewHeader.appendChild(th);
+            });
+            
+            // Clear and populate body (show first 10 rows)
+            previewBody.innerHTML = '';
+            mergedData.slice(0, 10).forEach(row => {
+                const tr = document.createElement('tr');
+                columns.forEach(col => {
+                    const td = document.createElement('td');
+                    td.textContent = row[col] || '';
+                    if (col === mergedColName) {
+                        td.classList.add('merged-column');
+                    }
+                    tr.appendChild(td);
+                });
+                previewBody.appendChild(tr);
+            });
+            
+            const rowCount = mergedData.length > 10 ? `Showing first 10 of ${mergedData.length} rows` : `${mergedData.length} rows`;
+            showFeedback(rowCount, 'info-box');
+        }
+        
+        function downloadExcel() {
+            if (mergedData.length === 0) {
+                showFeedback('No merged data to download', 'error-box');
+                return;
+            }
+            
+            const ws = XLSX.utils.json_to_sheet(mergedData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Merged Data');
+            
+            const fileName = document.getElementById('fileInput').files[0]?.name || 'merged_test_cases.xlsx';
+            const newFileName = fileName.replace('.xlsx', '_merged.xlsx').replace('.xls', '_merged.xlsx');
+            
+            XLSX.writeFile(wb, newFileName);
+            showFeedback('File downloaded successfully!', 'success-box');
+        }
+        
+        function goBack() {
+            document.getElementById('previewSection').classList.add('hidden');
+            document.getElementById('configSection').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function resetAll() {
+            document.getElementById('fileInput').value = '';
+            document.getElementById('configSection').classList.add('hidden');
+            document.getElementById('previewSection').classList.add('hidden');
+            document.getElementById('feedback').classList.remove('show');
+            workbook = null;
+            allData = [];
+            mergedData = [];
+        }
+        
+        function showFeedback(message, className) {
+            const feedback = document.getElementById('feedback');
+            feedback.textContent = message;
+            feedback.className = 'feedback show ' + className;
+        }
+    </script>
+</body>
+</html>
