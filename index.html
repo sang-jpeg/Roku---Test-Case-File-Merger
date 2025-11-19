@@ -435,7 +435,13 @@
                 Object.keys(row).forEach(key => {
                     merged[key] = row[key];
                 });
-                merged[newColName] = `${row[col1]}\n\n${separator}\n\n${row[col2]}`;
+                
+                // Only merge if both columns have data
+                if (row[col1] && row[col2]) {
+                    merged[newColName] = `${row[col1]}\n\n${separator}\n\n${row[col2]}`;
+                } else {
+                    merged[newColName] = '';
+                }
                 return merged;
             });
             
@@ -495,9 +501,14 @@
                 XLSX.utils.book_append_sheet(wb, ws, 'Merged Data');
                 
                 const fileName = document.getElementById('fileInput').files[0]?.name || 'merged_test_cases.xlsx';
-                const newFileName = fileName.replace('.xlsx', '_merged.xlsx').replace('.xls', '_merged.xlsx');
+                let newFileName = fileName.replace(/\.xlsx$/i, '_merged.xlsx').replace(/\.xls$/i, '_merged.xlsx');
                 
-                XLSX.writeFile(wb, newFileName);
+                // Ensure file ends with .xlsx
+                if (!newFileName.toLowerCase().endsWith('.xlsx')) {
+                    newFileName = newFileName + '.xlsx';
+                }
+                
+                XLSX.writeFile(wb, newFileName, { bookType: 'xlsx' });
                 showFeedback('File downloaded successfully!', 'success-box');
             } catch (error) {
                 showFeedback('Error downloading file: ' + error.message, 'error-box');
