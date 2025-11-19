@@ -489,15 +489,20 @@
                 return;
             }
             
-            const ws = XLSX.utils.json_to_sheet(mergedData);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, 'Merged Data');
-            
-            const fileName = document.getElementById('fileInput').files[0]?.name || 'merged_test_cases.xlsx';
-            const newFileName = fileName.replace('.xlsx', '_merged.xlsx').replace('.xls', '_merged.xlsx');
-            
-            XLSX.writeFile(wb, newFileName);
-            showFeedback('File downloaded successfully!', 'success-box');
+            try {
+                const ws = XLSX.utils.json_to_sheet(mergedData);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Merged Data');
+                
+                const fileName = document.getElementById('fileInput').files[0]?.name || 'merged_test_cases.xlsx';
+                const newFileName = fileName.replace('.xlsx', '_merged.xlsx').replace('.xls', '_merged.xlsx');
+                
+                XLSX.writeFile(wb, newFileName);
+                showFeedback('File downloaded successfully!', 'success-box');
+            } catch (error) {
+                showFeedback('Error downloading file: ' + error.message, 'error-box');
+                console.error('Download error:', error);
+            }
         }
         
         function goBack() {
